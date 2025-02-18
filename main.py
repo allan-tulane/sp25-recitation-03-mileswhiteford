@@ -46,22 +46,42 @@ def pad(x,y):
 
 def quadratic_multiply(x, y):
     # this just converts the result from a BinaryNumber to a regular int
-    return _quadratic_multiply(x,y).decimal_val
-
-def _quadratic_multiply(x, y):
-    ### TODO
-    pass
-    ###
-
-
+    return _quadratic_multiply(x,y)
     
+def _quadratic_multiply(x, y):
+    xvec = x.binary_vec
+    yvec = y.binary_vec
+    xvec, yvec = pad(xvec, yvec)
+    if x.decimal_val == 0 or y.decimal_val == 0:
+        return BinaryNumber(0)
+
+    if x.decimal_val < 2 and y.decimal_val < 2:
+        return BinaryNumber(x.decimal_val * y.decimal_val)
+
+
+    x_left, x_right = split_number(xvec)
+    y_left, y_right = split_number(yvec)
+
+    xlyl = _quadratic_multiply(x_left, y_left)
+    xlyr = _quadratic_multiply(x_left, y_right)
+    xryl = _quadratic_multiply(x_right, y_left)
+    xryr = _quadratic_multiply(x_right, y_right)
+
+    Frst = bit_shift(xlyl, len(xvec)) 
+    Scnd = bit_shift(BinaryNumber(xlyr.decimal_val + xryl.decimal_val), len(xvec)//2)
+    Thrd = BinaryNumber(xryr.decimal_val)
+
+    sum = Frst.decimal_val + Scnd.decimal_val + Thrd.decimal_val
+
+    return BinaryNumber(sum)  
+
+
     
 def test_quadratic_multiply(x, y, f):
     start = time.time()
     # multiply two numbers x, y using function f
-    
+    f(x, y)
     return (time.time() - start)*1000
-
 
     
     
